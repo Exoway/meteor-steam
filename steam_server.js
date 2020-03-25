@@ -17,7 +17,7 @@ function verify(query) {
   var response;
   try {
     response = HTTP.post('https://steamcommunity.com/openid/login', {
-      params: _.extend(query, { 'openid.mode': 'check_authentication' }),
+      params: Object.assign(query, { 'openid.mode': 'check_authentication' }),
       timeout: config.timeout ? Number(config.timeout) : 10000
     });
   } catch(err) {
@@ -25,7 +25,8 @@ function verify(query) {
   }
 
   if (response.content && response.content.indexOf('is_valid:true') !== -1) {
-    return _.last(query['openid.claimed_id'].split('/'));
+    let arr = query['openid.claimed_id'].split('/');
+    return arr[arr.length-1];
   } else {
     throw new Meteor.Error('openid-invalid-claimed-id', 'The SteamID provided in the OpenID request was invalid.');
   }
